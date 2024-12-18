@@ -9,7 +9,7 @@ def generate_keys():
 def get_server_ip():
     try:
         result = subprocess.run(["hostname", "-I"], capture_output=True, text=True, check=True)
-        server_ip = result.stdout.strip()
+        server_ip = result.stdout.strip().split()[0]
         return server_ip
     except subprocess.CalledProcessError as e:
         return str(e)
