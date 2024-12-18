@@ -3,7 +3,7 @@ import subprocess
 from flask import request, jsonify
 from app.auth import authenticate_request
 from app.utils import generate_keys, get_server_ip, get_free_ip
-from run import WG_CONF, CLIENTS_DIR, WG_INTERFACE
+from app.config import WG_CONF, CLIENTS_DIR, WG_INTERFACE
 
 def init_routes(app):
     @app.route("/create_client", methods=["POST"])

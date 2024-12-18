@@ -1,5 +1,5 @@
 import subprocess
-from run import WG_CONF, IP_RANGE_START, IP_RANGE_END, SUBNET
+from app.config import WG_CONF, IP_RANGE_START, IP_RANGE_END, SUBNET
 
 def generate_keys():
     private_key = subprocess.check_output("wg genkey", shell=True).decode().strip()

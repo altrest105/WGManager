@@ -1,5 +1,5 @@
 from flask import request
-from run import API_KEY
+from app.config import API_KEY
 
 def authenticate_request():
     auth_header = request.headers.get("Authorization")
