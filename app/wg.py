@@ -129,3 +129,11 @@ AllowedIPs = {client_ip}/32
 
         subprocess.run(f"wg set {self.interface} peer {client_public_key} remove", shell=True, check=True)
         os.remove(client_file_path)
+
+    def get_client(self, subscription_id):
+        client_file_path = os.path.join(self.clients_dir, f"{subscription_id}.conf")
+        if not os.path.exists(client_file_path):
+            return "Client configuration file not found"
+
+        with open(client_file_path, "r") as f:
+            return f.read()

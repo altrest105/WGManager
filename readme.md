@@ -75,3 +75,12 @@ chmod +x start.sh
   "subscription_id": "your_subscription_id"
 }
 ```
+
+### Получение клиента
+
+Для получения существующего VPN-клиента отправьте POST-запрос на /get_client с телом запроса, содержащим subscription_id:
+```json
+{
+  "subscription_id": "your_subscription_id"
+}
+```
