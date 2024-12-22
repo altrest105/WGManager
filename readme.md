@@ -43,13 +43,35 @@ VPNmanager/
 git clone https://github.com/altrest105/VPNmanager
 cd VPNmanager
 ```
+
 2. Сделайте файл start.sh исполняемым:
 ```bash
 chmod +x start.sh
 ```
+
 3. Запустите проект, выполнив команду:
 ```bash
 ./start.sh
 ```
 
-Сервер будет доступен по адресу ```0.0.0.0:5000```
+Сервер будет доступен по адресу `0.0.0.0:5000`
+
+## Использование
+
+### Создание клиента
+
+Для создания нового VPN-клиента отправьте POST-запрос на /create_client с телом запроса, содержащим subscription_id:
+```json
+{
+  "subscription_id": "your_subscription_id"
+}
+```
+
+### Удаление клиента
+
+Для удаления существующего VPN-клиента отправьте POST-запрос на /delete_client с телом запроса, содержащим subscription_id:
+```json
+{
+  "subscription_id": "your_subscription_id"
+}
+```
