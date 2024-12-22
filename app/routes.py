@@ -13,7 +13,7 @@ def init_routes(app):
         data = request.json
         subscription_id = data.get("subscription_id")
         if not subscription_id:
-            return jsonify({"error": "Client name is required"}), 400
+            return jsonify({"error": "Subscription ID is required"}), 400
 
 
         client_config = wg.create_client(subscription_id)
@@ -33,3 +33,17 @@ def init_routes(app):
         wg.delete_client(subscription_id)
 
         return jsonify({"message": "Client deleted successfully"}), 200
+    
+    @app.route("/delete_client", methods=["POST"])
+    def get_client():
+        if not authenticate_request():
+            return jsonify({"error": "Unauthorized"}), 401
+
+        data = request.json
+        subscription_id = data.get("subscription_id")
+        if not subscription_id:
+            return jsonify({"error": "Subscription ID is required"}), 400
+
+        client_config = wg.get_client(subscription_id)
+
+        return jsonify({"message": "Client getted successfully", "client_config": client_config}), 200
