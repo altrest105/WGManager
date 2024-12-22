@@ -111,41 +111,21 @@ AllowedIPs = {client_ip}/32
 
         return client_config
 
-    # def delete_client(self, subscription_id):
-    #     client_file_path = os.path.join(self.clients_dir, f"{subscription_id}.conf")
-    #     if not os.path.exists(client_file_path):
-    #         return "Client configuration file not found"
+    def delete_client(self, subscription_id):
+        client_file_path = os.path.join(self.clients_dir, f"{subscription_id}.conf")
+        if not os.path.exists(client_file_path):
+            return "Client configuration file not found"
 
-    #     with open(client_file_path, "r") as f:
-    #         lines = f.readlines()
-    #     client_public_key = None
-    #     for line in lines:
-    #         if line.startswith("PublicKey = "):
-    #             client_public_key = line.split(" = ")[1].strip()
-    #             break
+        with open(self.wg_conf, "r") as f:
+            config = f.read()
 
-    #     if not client_public_key:
-    #         return "Client public key not found in configuration file"
+        pattern = re.compile(r"\n\[Peer\]\n#subscription_id = {}\n#PrivateKey = .*\nPublicKey = (.*)\nAllowedIPs = .*\n".format(subscription_id))
+        match = re.search(pattern, config)
+        client_public_key = match.group(1)
+        config = re.sub(pattern, "", config)
 
-    #     with open(self.wg_conf, "r") as f:
-    #         lines = f.readlines()
-    #     with open(self.wg_conf, "w") as f:
-    #         skip = False
-    #         for line in lines:
-    #             if line.startswith("[Peer]") and f"PublicKey = {client_public_key}" in lines[lines.index(line)+1]:
-    #                 skip = True
-    #             elif skip and line.strip() == "":
-    #                 skip = False
-    #             elif not skip:
-    #                 f.write(line)
+        with open(self.wg_conf, "w") as f:
+            f.write(config)
 
-    #     subprocess.run(f"wg set {self.interface} peer {client_public_key} remove", shell=True, check=True)
-
-    #     os.remove(client_file_path)
-
-    #     # Перезапуск WireGuard через systemctl
-    #     result = subprocess.run(f"sudo systemctl restart wg-quick@{self.interface}", shell=True, capture_output=True, text=True)
-    #     if result.returncode != 0:
-    #         return f"Failed to restart WireGuard: {result.stderr}"
-
-    #     return None
+        subprocess.run(f"wg set {self.interface} peer {client_public_key} remove", shell=True, check=True)
+        os.remove(client_file_path)
