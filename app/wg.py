@@ -77,6 +77,9 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -
             self.check_wg()
         if not(os.path.exists(self.clients_dir)):
             os.makedirs(self.clients_dir)
+        client_file_path = os.path.join(self.clients_dir, f"{subscription_id}.conf")
+        if os.path.exists(client_file_path):
+            return "Client already exists"
         
         private_key, public_key = self.generate_keys()
         client_ip = self.get_free_ip()
@@ -94,7 +97,6 @@ PublicKey = {server_public_key}
 Endpoint = {self.server_ip}:{self.listen_port}
 AllowedIPs = 0.0.0.0/0"""
 
-        client_file_path = os.path.join(self.clients_dir, f"{subscription_id}.conf")
         with open(client_file_path, "w") as f:
             f.write(client_config)
 

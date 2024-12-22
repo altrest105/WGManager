@@ -34,7 +34,7 @@ def init_routes(app):
 
         return jsonify({"message": "Client deleted successfully"}), 200
     
-    @app.route("/delete_client", methods=["POST"])
+    @app.route("/get_client", methods=["POST"])
     def get_client():
         if not authenticate_request():
             return jsonify({"error": "Unauthorized"}), 401
