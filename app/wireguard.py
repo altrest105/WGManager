@@ -11,10 +11,6 @@ class WireGuard:
         self.interface = WG_INTERFACE
         self.listen_port = LISTEN_PORT
         self.server_ip = self.get_server_ip()
-        res = subprocess.run(["sysctl", "net.ipv4.ip_forward"], capture_output=True, text=True, check=True)
-        if "net.ipv4.ip_forward = 0" in res.stdout:
-            subprocess.run(["sysctl", "-w", "net.ipv4.ip_forward=1"], check=True)
-            subprocess.run(["sysctl", "-p"], check=True)
 
     def generate_keys(self):
         private_key = subprocess.check_output("wg genkey", shell=True).decode().strip()
@@ -48,13 +44,18 @@ class WireGuard:
                 return line.split()[4]
     
     def check_wg(self):
-        res = subprocess.run(["systemctl", "is-active", f"wg-quick@{self.interface}"], capture_output=True, text=True)
-        if "inactive" in res.stdout or "failed" in res.stdout:
-            subprocess.run(["systemctl", "start", f"wg-quick@{self.interface}"], check=True)
+        res = subprocess.run(["sysctl", "net.ipv4.ip_forward"], capture_output=True, text=True, check=True)
+        if "net.ipv4.ip_forward = 0" in res.stdout:
+            subprocess.run(["echo", '"net.ipv4.ip_forward=1"', ">>", "/etc/sysctl.conf"], check=True)
+            subprocess.run(["sysctl", "-p"], check=True)
 
         res = subprocess.run(["systemctl", "is-enabled", f"wg-quick@{self.interface}"], capture_output=True, text=True)
         if "disabled" in res.stdout:
             subprocess.run(["systemctl", "enable", f"wg-quick@{self.interface}"], check=True)
+        
+        res = subprocess.run(["systemctl", "is-active", f"wg-quick@{self.interface}"], capture_output=True, text=True)
+        if "inactive" in res.stdout or "failed" in res.stdout:
+            subprocess.run(["systemctl", "start", f"wg-quick@{self.interface}"], check=True)
 
     def create_server_config(self):
         private_key, public_key = self.generate_keys()
@@ -74,7 +75,7 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -
     def create_client(self, subscription_id):
         if not(os.path.exists(f"/etc/wireguard/{self.interface}.conf") and os.path.getsize(f"/etc/wireguard/{self.interface}.conf") > 0):
             self.create_server_config()
-            self.check_wg()
+        self.check_wg()
         if not(os.path.exists(self.clients_dir)):
             os.makedirs(self.clients_dir)
         client_file_path = os.path.join(self.clients_dir, f"{subscription_id}.conf")

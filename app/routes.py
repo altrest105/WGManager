@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.auth import authenticate_request
-from app.wg import WireGuard
+from app.wireguard import WireGuard
 
 wg = WireGuard()
 
@@ -46,4 +46,4 @@ def init_routes(app):
 
         client_config = wg.get_client(subscription_id)
 
-        return jsonify({"message": "Client getted successfully", "client_config": client_config}), 200
+        return jsonify({"message": "Client getted successfully", "client_config": client_config}), 201
