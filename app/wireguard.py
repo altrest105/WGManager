@@ -44,11 +44,6 @@ class WireGuard:
                 return line.split()[4]
     
     def check_wg(self):
-        res = subprocess.run(["sysctl", "net.ipv4.ip_forward"], capture_output=True, text=True, check=True)
-        if "net.ipv4.ip_forward = 0" in res.stdout:
-            subprocess.run(["echo", '"net.ipv4.ip_forward=1"', ">>", "/etc/sysctl.conf"], check=True)
-            subprocess.run(["sysctl", "-p"], check=True)
-
         res = subprocess.run(["systemctl", "is-enabled", f"wg-quick@{self.interface}"], capture_output=True, text=True)
         if "disabled" in res.stdout:
             subprocess.run(["systemctl", "enable", f"wg-quick@{self.interface}"], check=True)
