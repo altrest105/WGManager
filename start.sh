@@ -15,6 +15,5 @@ if ! grep -q "^net.ipv4.ip_forward=1" /etc/sysctl.conf; then
     sysctl -p
 fi
 
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem -subj "/C=RU/ST=no/L=no/O=no/OU=no/CN=no"
-
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem -subj "/C=RU/ST=no/L=no/O=no/OU=no/CN>
 gunicorn -w 4 -b 0.0.0.0:5000 run:app --certfile=cert.pem --keyfile=key.pem
